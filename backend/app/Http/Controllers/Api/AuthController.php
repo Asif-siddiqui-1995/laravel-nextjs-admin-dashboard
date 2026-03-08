@@ -13,20 +13,18 @@ class AuthController extends Controller
 {
      public function login(Request $request)
     {
-        if(!Auth::attempt($request->only('email','password')))
-        {
+        if (!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
-                'message'=>'Invalid credentials'
-            ],401);
+                'message' => 'Invalid credentials'
+            ], 401);
         }
 
         $user = Auth::user();
-
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
-            'user'=>$user,
-            'token'=>$token
+            'user' => $user->load('roles'),
+            'token' => $token
         ]);
     }
 
@@ -35,10 +33,10 @@ class AuthController extends Controller
         $request->user()->tokens()->delete();
 
         return response()->json([
-            'message'=>'Logged out'
+            'message' => 'Logged out'
         ]);
     }
-    public function signup(Request $request)
+     public function signup(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -59,20 +57,25 @@ class AuthController extends Controller
             'password' => Hash::make($request->password)
         ]);
 
+        // assign default role 'user'
+        $user->assignRole('admin');
+
         // create token
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
             'message' => 'User registered successfully',
-            'user' => $user,
+            'user' => $user->load('roles'),
             'token' => $token
         ], 201);
     }
+
     public function profile(Request $request)
     {
         return response()->json([
             'user' => $request->user()->load('roles')
         ]);
     }
-
 }
+  
+

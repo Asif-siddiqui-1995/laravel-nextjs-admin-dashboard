@@ -6,7 +6,6 @@ use App\Http\Controllers\Api\UserController;
 
 Route::post('/login',[AuthController::class,'login']);
 Route::post('/signup',[AuthController::class,'signup']);
-Route::middleware('auth:sanctum')->get('/profile', [AuthController::class, 'profile']); 
 
 Route::middleware('auth:sanctum')->group(function(){
 

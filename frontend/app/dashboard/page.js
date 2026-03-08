@@ -36,7 +36,7 @@ export default function Dashboard() {
     // Fetch Current User Profile
     const fetchProfile = async () => {
         try {
-            const res = await axios.get("http://127.0.0.1:8000/api/profile", {
+            const res = await axios.get("http://127.0.0.1:8000/api/users", {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },

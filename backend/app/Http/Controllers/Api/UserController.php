@@ -26,7 +26,7 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
-            'role' => 'required'
+            'role' => 'nullable|in:admin,user,guest' 
         ]);
 
         $user = User::create([
@@ -35,33 +35,33 @@ class UserController extends Controller
             'password' => Hash::make($request->password)
         ]);
 
-        // assign role (admin / user / guest)
-        $user->assignRole($request->role);
+        $roleToAssign = $request->role ?? 'admin';
+        $user->assignRole($roleToAssign);
 
         return response()->json([
             'message' => 'User created successfully',
             'user' => $user->load('roles')
         ]);
-    }
+}
 
 
     // UPDATE USER
     public function update(Request $request, $id)
-{
-    $user = User::findOrFail($id);
+    {
+        $user = User::findOrFail($id);
 
-    $request->validate([
-        'name' => 'required',
-        'email' => 'required|email|unique:users,email,' . $id
-    ]);
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email,' . $id
+        ]);
 
-    $user->update([
-        'name' => $request->name,
-        'email' => $request->email
-    ]);
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email
+        ]);
 
-    if ($request->role) {
-        $user->syncRoles([$request->role]);
+        if ($request->role) {
+        $user->syncRoles([$request->role]); 
     }
 
     return response()->json([
